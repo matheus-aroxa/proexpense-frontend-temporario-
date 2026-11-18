@@ -13,9 +13,9 @@ Por padrão o frontend consome o backend publicado em `https://proexpense-backen
 
 - **Desenvolvimento**: as chamadas a `/api` passam pelo proxy do Vite (o backend não habilita CORS). Para usar o
   backend local, crie um `.env.local` com `VITE_BACKEND_URL=http://localhost:8090`.
-- **Build de produção**: o navegador chama o backend diretamente, em `VITE_API_BASE_URL` (padrão: o Render). Isso
-  exige CORS liberado no backend para a origem do frontend. Alternativa: definir `VITE_API_BASE_URL=` (vazio) e
-  servir o frontend atrás de um proxy reverso que encaminhe `/api` ao backend.
+- **Build de produção**: as chamadas vão para `/api` na mesma origem. Na Vercel, o rewrite de `vercel.json`
+  encaminha `/api/*` ao Render, então não há CORS. Para chamar outro backend diretamente, defina
+  `VITE_API_BASE_URL` no build (esse backend precisa liberar CORS para a origem do frontend).
 - O plano gratuito do Render hiberna o serviço; a primeira requisição após inatividade pode levar até ~1 minuto.
 
 ## Funcionalidades
