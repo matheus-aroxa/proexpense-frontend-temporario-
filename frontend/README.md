@@ -9,12 +9,14 @@ npm install
 npm run dev        # http://localhost:5173
 ```
 
-O backend precisa estar rodando em `http://localhost:8090`. Como ele não habilita CORS, as chamadas a `/api` passam
-pelo proxy do Vite. Para apontar para outro endereço, crie um `.env.local` a partir do `.env.example`
-(`VITE_BACKEND_URL`).
+Por padrão o frontend consome o backend publicado em `https://proexpense-backend.onrender.com`.
 
-No build de produção (`npm run build`), a API é chamada na mesma origem (`/api/v1`), a menos que `VITE_API_BASE_URL`
-seja definido.
+- **Desenvolvimento**: as chamadas a `/api` passam pelo proxy do Vite (o backend não habilita CORS). Para usar o
+  backend local, crie um `.env.local` com `VITE_BACKEND_URL=http://localhost:8090`.
+- **Build de produção**: o navegador chama o backend diretamente, em `VITE_API_BASE_URL` (padrão: o Render). Isso
+  exige CORS liberado no backend para a origem do frontend. Alternativa: definir `VITE_API_BASE_URL=` (vazio) e
+  servir o frontend atrás de um proxy reverso que encaminhe `/api` ao backend.
+- O plano gratuito do Render hiberna o serviço; a primeira requisição após inatividade pode levar até ~1 minuto.
 
 ## Funcionalidades
 

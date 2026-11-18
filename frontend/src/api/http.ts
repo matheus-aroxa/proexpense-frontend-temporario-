@@ -1,4 +1,12 @@
-const API_BASE = `${(import.meta.env.VITE_API_BASE_URL ?? '').replace(/\/$/, '')}/api/v1`
+const DEFAULT_API_ORIGIN = 'https://proexpense-backend.onrender.com'
+
+/**
+ * Em desenvolvimento a API é chamada na mesma origem e o proxy do Vite repassa ao backend.
+ * No build, chama o backend diretamente (VITE_API_BASE_URL, ou o Render por padrão);
+ * defina VITE_API_BASE_URL vazio para usar a mesma origem atrás de um proxy reverso.
+ */
+const API_ORIGIN = import.meta.env.DEV ? '' : (import.meta.env.VITE_API_BASE_URL ?? DEFAULT_API_ORIGIN)
+const API_BASE = `${API_ORIGIN.replace(/\/$/, '')}/api/v1`
 
 /** Erro no formato ProblemDetail (RFC 9457) devolvido pelo GlobalExceptionHandler do backend. */
 export class ApiError extends Error {
@@ -43,7 +51,7 @@ async function request<T>(method: Method, path: string, body?: unknown): Promise
       body: body === undefined ? undefined : JSON.stringify(body),
     })
   } catch {
-    throw new ApiError(0, 'Não foi possível conectar ao servidor. Verifique se o backend está rodando.')
+    throw new ApiError(0, 'Não foi possível conectar ao servidor. Se o backend estava inativo, aguarde alguns segundos e tente novamente.')
   }
 
   if (!response.ok) throw await parseError(response)
