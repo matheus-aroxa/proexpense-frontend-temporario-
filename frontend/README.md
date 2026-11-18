@@ -1,75 +1,41 @@
-# React + TypeScript + Vite
+# ProExpense — Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Interface web (React 19 + Vite + Tailwind 4) para o backend ProExpense (branch `feature/expenses_installments`).
 
-Currently, two official plugins are available:
+## Rodando
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
-
-## React Compiler
-
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-
+```bash
+npm install
+npm run dev        # http://localhost:5173
 ```
 
-You can also install [eslint-plugin-react-x](https://npmx.dev/package/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://npmx.dev/package/eslint-plugin-react-dom) for React-specific lint rules:
+O backend precisa estar rodando em `http://localhost:8090`. Como ele não habilita CORS, as chamadas a `/api` passam
+pelo proxy do Vite. Para apontar para outro endereço, crie um `.env.local` a partir do `.env.example`
+(`VITE_BACKEND_URL`).
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+No build de produção (`npm run build`), a API é chamada na mesma origem (`/api/v1`), a menos que `VITE_API_BASE_URL`
+seja definido.
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+## Funcionalidades
 
+- **Usuário e conta**: o backend ainda não tem autenticação, então a entrada é a escolha (ou criação) de um usuário e
+  de uma conta. A seleção fica salva no navegador.
+- **Despesas**: visão mensal com filtros por cartão, categoria e busca; criação, edição e exclusão.
+- **Compras parceladas**: no crédito, divide o valor total em 2 a 120 parcelas com vencimento mensal, em dia fixo do mês
+  ou em intervalo personalizado (dias/meses/anos). A prévia replica o `InstallmentScheduler` e o rateio do backend
+  (centavos restantes vão para a 1ª parcela).
+- **Parcelamentos**: agrupa as parcelas de cada compra (o backend não expõe um id de grupo; o agrupamento usa conta,
+  dono, nome e número de parcelas), mostra progresso, saldo a vencer e permite excluir a compra inteira.
+- **Cartões**, **Categorias** e **Membros** da conta.
+
+## Estrutura
+
+```
+src/
+  api/         cliente HTTP (ProblemDetail → ApiError), tipos e endpoints
+  lib/         datas, formatação, lógica de parcelas
+  session/     usuário/conta selecionados e dados carregados da conta
+  components/  UI base, ícones e toasts
+  pages/       seleção de usuário/conta e layout da conta
+  features/    despesas, parcelamentos, cartões, categorias, membros
 ```
